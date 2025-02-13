@@ -1,4 +1,11 @@
 # spoof_vendor_sepolicy
 
+A demo for [mountify's standalone-script](https://github.com/backslashxx/mountify/tree/standalone-script).
 
-[Download](https://raw.githubusercontent.com/backslashxx/spoof_vendor_sepolicy/refs/heads/master/spoof.zip)
+These two have to be mounted after boot complete, else, 'Android System' will complain.
+
+Filters:
+- /vendor/etc/selinux/vendor_sepolicy.cil
+- /system/etc/vintf/compatibility_matrix.device.xml
+
+Tries to evade [Root Detector](https://github.com/reveny/Android-Native-Root-Detector)'s LineageOS detections.
