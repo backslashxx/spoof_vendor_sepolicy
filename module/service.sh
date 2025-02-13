@@ -18,7 +18,9 @@ FAKE_MOUNT_NAME="my_vendor_sepolicy"
 # FAKE_MOUNT_NAME="$(cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 10)"
 
 # susfs usage is not required but we can use it if its there.
-# SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
+SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
+# set to 1 to enable
+mountify_use_susfs=0
 
 # wait for boot complete to avoid android system screaming at us
 until [ "$(getprop sys.boot_completed)" == "1" ]; do
@@ -39,26 +41,26 @@ vendor"
 
 # normal depth
 normal_depth() {
-	for DIR in $(ls -d */* ); do
+	for DIR in $(ls -d */*/ | sed 's/.$//' ); do
 		busybox mount -t overlay -o "lowerdir=$(pwd)/$DIR:/$DIR" overlay "/$DIR"
-		# ${SUSFS_BIN} add_sus_mount "/$DIR"
+		[ $mountify_use_susfs = 1 ] && ${SUSFS_BIN} add_sus_mount "/$DIR"
 	done
 }
 
 # controlled depth
 controlled_depth() {
 	if [ -z "$1" ] || [ -z "$2" ]; then return ; fi
-	for DIR in $(ls -d $1/* ); do
+	for DIR in $(ls -d $1/*/ | sed 's/.$//' ); do
 		busybox mount -t overlay -o "lowerdir=$(pwd)/$DIR:$2$DIR" overlay "$2$DIR"
-		# ${SUSFS_BIN} add_sus_mount "$2$DIR"
+		[ $mountify_use_susfs = 1 ] && ${SUSFS_BIN} add_sus_mount "$2$DIR"
 	done
 }
 
 # handle single depth on magic mount
 single_depth() {
-	for DIR in $( ls -d * | grep -vE "(odm|product|system_ext|vendor)$" 2>/dev/null ); do
+	for DIR in $( ls -d */ | sed 's/.$//' | grep -vE "(odm|product|system_ext|vendor)$" 2>/dev/null ); do
 		busybox mount -t overlay -o "lowerdir=$(pwd)/$DIR:/system/$DIR" overlay "/system/$DIR"
-		# ${SUSFS_BIN} add_sus_mount "/system/$DIR"
+		[ $mountify_use_susfs = 1 ] && ${SUSFS_BIN} add_sus_mount "/system/$DIR"
 	done
 }
 
