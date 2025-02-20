@@ -1,6 +1,6 @@
 id=vendor_sepolicy
 name=vendor_sepolicy
-version=v1.0.5
-versionCode=105
+version=v1.1.0
+versionCode=110
 author=xx
-description=filters some lineage detection / a demo for mountify's standalone-script
+description=filters lineage on vendor_sepolicy, compatibility_matrix and /system/bin/service
